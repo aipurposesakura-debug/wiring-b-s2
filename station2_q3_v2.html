@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>室內配線乙級第2站第3題 - 互動模擬面板</title>
+    <!-- 防搜尋引擎抓取的隱藏標籤 -->
+    <meta name="robots" content="noindex, nofollow">
+    <!-- 低調的網頁標題 -->
+    <title>Panel Sim 03</title>
     <style>
-        /* ===== 加上這行神仙屬性，解決寬度溢出問題 ===== */
         * { box-sizing: border-box; }
 
         body { 
@@ -28,14 +30,13 @@
             justify-content: center;
         }
 
-        /* 面板共用風格 */
         .panel {
             background-color: #fff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             border-top: 5px solid #6c757d;
-            width: 100%; /* 自適應寬度 */
+            width: 100%; 
         }
         .panel h2 {
             margin-top: 0;
@@ -46,9 +47,8 @@
             text-align: center;
         }
 
-        /* 外部模擬狀態區塊 */
         .sim-box {
-            flex: 1 1 300px; /* 允許縮放，基準寬度 300px */
+            flex: 1 1 300px; 
             max-width: 100%;
             border-top-color: #ffc107;
         }
@@ -74,9 +74,8 @@
         .sim-btn.danger { background-color: #dc3545; }
         .sim-btn.warning { background-color: #fd7e14; }
 
-        /* 主控制面板區塊 */
         .control-panel {
-            flex: 1 1 320px; /* 允許縮放，基準寬度 320px */
+            flex: 1 1 320px; 
             max-width: 100%;
             border-top-color: #28a745;
             background-color: #d1d5d8;
@@ -91,7 +90,6 @@
             width: 100%;
         }
 
-        /* 指示燈 */
         .indicators-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -115,7 +113,6 @@
         .indicator.yellow-on { background-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; }
         .ind-label { font-weight: bold; font-size: 0.85rem; color: #222; background: rgba(255,255,255,0.6); padding: 2px 5px; border-radius: 3px;}
 
-        /* 切換開關 */
         .cos-switch {
             width: 100%;
             text-align: center;
@@ -137,7 +134,6 @@
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        /* 圓形按鈕區 */
         .right-section {
             background-color: #b0b5b9;
             padding: 20px;
@@ -177,8 +173,6 @@
             border-radius: 5px;
             font-weight: bold;
         }
-
-        /* ================= 懸浮泡泡與彈出視窗 ================= */
         
         .fab-btn {
             position: fixed;
@@ -211,7 +205,6 @@
             align-items: center;
             padding: 20px;
         }
-
         .modal-content {
             background: #fff;
             padding: 25px 20px;
@@ -223,7 +216,6 @@
             max-height: 80vh;
             overflow-y: auto;
         }
-        
         .close-btn {
             position: absolute;
             top: 15px;
@@ -244,6 +236,14 @@
     </style>
 </head>
 <body>
+
+    <!-- ================= 密碼鎖遮罩 ================= -->
+    <div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+        <h2 style="margin-bottom: 20px; font-size: 1.8rem;">🔒 系統已鎖定</h2>
+        <input type="password" id="pwd-input" placeholder="請輸入密碼" style="padding: 12px; font-size: 1.2rem; border-radius: 8px; border: none; margin-bottom: 15px; text-align: center; width: 200px; outline: none; color: #333;">
+        <button onclick="checkPwd()" style="padding: 10px 25px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; background: #0d6efd; color: white; font-weight: bold; transition: 0.2s;">解鎖</button>
+        <p id="error-msg" style="color: #ff6b6b; margin-top: 15px; font-weight: bold; display: none;">❌ 密碼錯誤，請重試！</p>
+    </div>
 
     <h1>第3題 控制模擬</h1>
 
@@ -283,7 +283,7 @@
                 <div class="indicators-grid">
                     <div class="ind-group"><div id="ind-r1" class="indicator"></div><div class="ind-label">R1 (MC1)</div></div>
                     <div class="ind-group"><div id="ind-r2" class="indicator"></div><div class="ind-label">R2 (MC2)</div></div>
-                    <div class="ind-group"><div id="ind-g1" class="indicator"></div><div class="ind-label">G1 (X激磁)</div></div>
+                    <div class="ind-group"><div id="ind-g1" class="indicator"></div><div class="ind-label">G1 (缺水呼叫)</div></div>
                     <div class="ind-group"><div id="ind-g2" class="indicator"></div><div class="ind-label">G2 (停止)</div></div>
                     <div class="ind-group"><div id="ind-bz" class="indicator"></div><div class="ind-label">BZ (警報)</div></div>
                 </div>
@@ -316,7 +316,6 @@
 
     <!-- 動作說明彈出視窗 (Modal) -->
     <div class="modal-overlay" id="instr-modal" onclick="closeModal(event)">
-        <!-- 內容區，加入 onclick 阻止事件冒泡 -->
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModal(event)">&times;</button>
             <h2>動作說明步驟</h2>
@@ -336,6 +335,23 @@
     </div>
 
     <script>
+        // ======= 密碼驗證邏輯 =======
+        function checkPwd() {
+            let pwd = document.getElementById("pwd-input").value;
+            if (pwd === "1019") {
+                document.getElementById("login-overlay").style.display = "none";
+            } else {
+                document.getElementById("error-msg").style.display = "block";
+                document.getElementById("pwd-input").value = "";
+            }
+        }
+        document.getElementById("pwd-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkPwd();
+            }
+        });
+
         // ======= 彈出視窗邏輯 =======
         function openModal() {
             document.getElementById('instr-modal').style.display = 'flex';
@@ -344,7 +360,7 @@
             document.getElementById('instr-modal').style.display = 'none';
         }
 
-        // ======= 系統狀態邏輯 =======
+        // ======= 系統狀態邏輯 (依真實電路圖修正) =======
         let state = {
             nfb: false,
             cos: 'M',
@@ -365,23 +381,37 @@
                 state.mc1 = false; state.mc2 = false;
                 statusText = "系統未送電 (NFB OFF)";
             } else {
-                let fault = state.thry1 || state.thry2 || !state.fsNormal;
+                let fault_th = state.thry1 || state.thry2;
+                let fault_fs = !state.fsNormal;
                 
-                if (fault) {
-                    if (state.mc1 || state.mc2) { state.mc1 = false; state.mc2 = false; }
-                    bz = true; 
-                    statusText = "警報！發生過載或給水缺水 (BZ響)";
+                // 過載或給水缺水都會發出警報
+                if (fault_th || fault_fs) {
+                    bz = true;
+                }
+
+                // 若發生過載，或FS向下(切斷COS電源)，馬達強制停止
+                if (fault_th || fault_fs) {
+                    state.mc1 = false; 
+                    state.mc2 = false; 
+                    if (fault_th) statusText = "警報！發生過載 (BZ響)";
+                    if (fault_fs) statusText = "警報！給水源缺水 (BZ響)";
                 } else {
+                    // 正常供電狀態
                     if (state.cos === 'M') {
                         statusText = "手動模式 (M)";
-                        if (state.btnPressed === 'ON1') state.mc1 = true;
+                        g1 = false; // G1在自動模式缺水時才會亮
+                        
+                        // 加入電氣互鎖邏輯 (MC2不動作時才能啟動MC1，反之亦然)
+                        if (state.btnPressed === 'ON1' && !state.mc2) state.mc1 = true;
                         if (state.btnPressed === 'OFF1') state.mc1 = false;
-                        if (state.btnPressed === 'ON2') state.mc2 = true;
+                        
+                        if (state.btnPressed === 'ON2' && !state.mc1) state.mc2 = true;
                         if (state.btnPressed === 'OFF2') state.mc2 = false;
+
                     } else if (state.cos === 'A') {
                         statusText = "自動模式 (A) - MR 排程: 優先啟動泵浦 " + state.nextPump;
                         if (state.waterLow) {
-                            g1 = true;
+                            g1 = true; // X激磁，並聯的G1亮起
                             if (!state.mc1 && !state.mc2) {
                                 if (state.nextPump === 1) state.mc1 = true;
                                 else state.mc2 = true;
@@ -389,15 +419,20 @@
                         } else {
                             g1 = false;
                             if (state.mc1 || state.mc2) {
-                                state.mc1 = false; state.mc2 = false;
+                                state.mc1 = false; 
+                                state.mc2 = false;
+                                // 滿水停機後，交替電驛切換狀態等待下次啟動
                                 state.nextPump = state.nextPump === 1 ? 2 : 1;
                             }
                         }
                     }
                 }
+                
+                // G2 燈串聯 MC1-b 與 MC2-b，只要兩台都沒轉就會亮
                 g2 = (!state.mc1 && !state.mc2);
             }
 
+            // 更新 UI
             document.getElementById('ind-r1').className = 'indicator ' + (state.mc1 ? 'red-on' : '');
             document.getElementById('ind-r2').className = 'indicator ' + (state.mc2 ? 'red-on' : '');
             document.getElementById('ind-g1').className = 'indicator ' + (g1 ? 'green-on' : '');
