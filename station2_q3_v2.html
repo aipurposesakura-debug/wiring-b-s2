@@ -197,6 +197,48 @@
             font-weight: bold;
             letter-spacing: 1px;
         }
+        /* ===== 手機版專屬排版優化 ===== */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.2rem; margin-bottom: 15px; }
+            .main-container { flex-direction: column; gap: 15px; }
+            
+            /* 1. 動作說明：置頂懸浮、內部可滑動 */
+            .instructions {
+                order: 1;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                max-height: 22vh; /* 限制高度在螢幕的 1/4 */
+                overflow-y: auto; /* 內容太多可滑動 */
+                min-width: 100%;
+                box-sizing: border-box;
+                padding: 10px 15px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            .instructions h2 { font-size: 1rem; margin-bottom: 5px; padding-bottom: 5px; }
+            .instructions ul { font-size: 0.85rem; padding-left: 15px; line-height: 1.5; margin: 0; }
+            
+            /* 2. 外部狀態模擬：排在中間 */
+            .sim-box {
+                order: 2;
+                min-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* 3. 控制面板：排在下方並修正超寬問題 */
+            .control-panel {
+                order: 3;
+                min-width: 100%;
+                box-sizing: border-box;
+                padding: 15px;
+            }
+            .panel-inner { flex-direction: column; gap: 15px; }
+            .left-section, .right-section { width: 100%; box-sizing: border-box; }
+            .indicators-grid { gap: 10px; }
+            .indicator { width: 35px; height: 35px; }
+            .btn-circle { width: 55px; height: 55px; font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
