@@ -98,13 +98,13 @@
     </div>
 
     <div class="content-area">
-        <!-- 用 iframe 載入各題的獨立 HTML 檔案 -->
-        <iframe id="main-frame" src="q3.html"></iframe>
+        <!-- 載入你指定的檔名 -->
+        <iframe id="main-frame" src="station2_q3_v2.html"></iframe>
         
         <!-- 空白/未完成題目的提示畫面 -->
         <div id="empty-message" class="empty-state">
             <h2>🚧 盤面建置中</h2>
-            <p>這題的模擬控制盤還沒做好喔！<br>請點選上方標籤先去練習第三題。</p>
+            <p>這題的模擬控制盤還沒做好喔！<br>請點選上方標籤切換到已有題目的畫面。</p>
         </div>
     </div>
 
@@ -118,11 +118,11 @@
             const iframe = document.getElementById('main-frame');
             const emptyMsg = document.getElementById('empty-message');
 
-            // 判斷是否為第3題 (如果有做其他題，可以在這邊擴充)
+            // 判斷第3題，並載入指定的檔名
             if (questionNum === 3) {
                 iframe.style.display = 'block';
                 emptyMsg.style.display = 'none';
-                iframe.src = 'q3.html';
+                iframe.src = 'station2_q3_v2.html';
             } else {
                 // 其他題顯示施工中
                 iframe.style.display = 'none';
