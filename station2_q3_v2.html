@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>室內配線乙級第2站第3題 - 互動模擬面板 v2</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #e9ecef; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 統一的面板風格 */
+        .panel {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-top: 5px solid #6c757d;
+        }
+        .panel h2 {
+            margin-top: 0;
+            color: #343a40;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        /* 動作說明區塊 */
+        .instructions {
+            flex: 1;
+            min-width: 300px;
+            border-top-color: #17a2b8;
+            background-color: #f8f9fa;
+        }
+        .instructions ul {
+            padding-left: 20px;
+            line-height: 1.8;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+        .instructions li { margin-bottom: 8px; }
+        .highlight { color: #d63384; font-weight: bold; }
+
+        /* 控制面板區塊 */
+        .control-panel {
+            flex: 2;
+            min-width: 500px;
+            border-top-color: #28a745;
+            background-color: #d1d5d8; /* 模擬鐵灰色烤漆盤面 */
+        }
+        
+        .panel-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        /* 左側：指示燈與切換開關 */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex: 1;
+        }
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            justify-items: center;
+        }
+        .ind-group { text-align: center; }
+        .indicator {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid #555;
+            background-color: #333;
+            margin: 0 auto 5px auto;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .indicator.red-on { background-color: #ff3333; box-shadow: 0 0 20px #ff3333, inset 0 2px 5px rgba(255,255,255,0.4); }
+        .indicator.green-on { background-color: #33ff33; box-shadow: 0 0 20px #33ff33, inset 0 2px 5px rgba(255,255,255,0.4); }
+        .indicator.yellow-on { background-color: #ffcc00; box-shadow: 0 0 20px #ffcc00, inset 0 2px 5px rgba(255,255,255,0.4); }
+        .ind-label { font-weight: bold; font-size: 0.9rem; color: #222; background: rgba(255,255,255,0.6); padding: 2px 5px; border-radius: 3px;}
+
+        /* 右側：圓形按鈕區 */
+        .right-section {
+            background-color: #b0b5b9;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.2);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+        }
+        
+        .btn-circle {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 4px solid #888;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, box-shadow 0.1s;
+            outline: none;
+        }
+        .btn-circle:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.3);
+        }
+        .btn-circle.on { background-color: #4CAF50; color: white; border-color: #2E7D32; }
+        .btn-circle.off { background-color: #F44336; color: white; border-color: #C62828; }
+        
+        /* 切換開關樣式 */
+        .cos-switch {
+            text-align: center;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #aaa;
+        }
+        .cos-btn {
+            padding: 8px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #2196F3;
+            color: white;
+            width: 100%;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+        .cos-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
+        /* 外部模擬狀態區塊 */
+        .sim-box {
+            flex: 1;
+            min-width: 250px;
+            border-top-color: #ffc107;
+        }
+        .sim-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+        .sim-row:last-child { border-bottom: none; }
+        .sim-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        .sim-btn.active { background-color: #4CAF50; }
+        .sim-btn.danger { background-color: #dc3545; }
+        .sim-btn.warning { background-color: #fd7e14; }
+
+        .status-bar {
+            width: 100%;
+            text-align: center;
+            background-color: #343a40;
+            color: #ffc107;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>室內配線乙級 第2站 第3題 控制模擬</h1>
+
+    <div class="main-container">
+        
+        <!-- 左側：動作說明 (依據檢定圖片) -->
+        <div class="panel instructions">
+            <h2>動作說明步驟</h2>
+            <ul>
+                <li><span class="highlight">★ N.F.B ON時</span>，G2亮。</li>
+                <li><span class="highlight">★ 切手動，按 ON1</span>，MC1自保持、R1亮。<br>按 OFF1停止、G2亮。</li>
+                <li><span class="highlight">★ 按 ON2</span>，MC2自保持、R2亮。<br>按 OFF2停止、G2亮。</li>
+                <li><span class="highlight">★ MC1 (MC2) 激磁時</span>，測 TH-RY1 (或TH-RY2)、BZ響、G2亮。</li>
+                <li><span class="highlight">★ MC1 (MC2) 激磁時</span>，拉 FS向下 (缺水)、BZ響、G2亮。</li>
+                <li><span class="highlight">★ 切自動時</span> (模擬上水塔滿水，缺水狀態)<br>
+                    (將電極棒 E1-E3短路，E1-E3開路，反覆以鐵夾觸碰極棒)<br>
+                    此時MC1(R1)、MC2(R2) 只有其中一組會動作。<br>
+                    且每觸碰一次，MC均互換輪替動作。
+                </li>
+            </ul>
+        </div>
+
+        <!-- 中間：主控制面板 -->
+        <div class="panel control-panel">
+            <h2>主控制面板</h2>
+            <div class="panel-inner">
+                
+                <!-- 指示燈與COS -->
+                <div class="left-section">
+                    <div class="indicators-grid">
+                        <div class="ind-group"><div id="ind-r1" class="indicator"></div><div class="ind-label">R1 (MC1)</div></div>
+                        <div class="ind-group"><div id="ind-r2" class="indicator"></div><div class="ind-label">R2 (MC2)</div></div>
+                        <div class="ind-group"><div id="ind-g1" class="indicator"></div><div class="ind-label">G1 (X激磁)</div></div>
+                        <div class="ind-group"><div id="ind-g2" class="indicator"></div><div class="ind-label">G2 (停止)</div></div>
+                        <div class="ind-group"><div id="ind-bz" class="indicator"></div><div class="ind-label">BZ (警報)</div></div>
+                    </div>
+                    
+                    <div class="cos-switch">
+                        <div style="margin-bottom:8px; font-weight:bold; color:#444;">COS 模式切換開關</div>
+                        <button id="btn-cos" class="cos-btn" onclick="toggleCOS()">目前模式：手動 (M)</button>
+                    </div>
+                </div>
+
+                <!-- 右側按鈕區 -->
+                <div class="right-section">
+                    <div style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                        <button class="btn-circle on" onmousedown="pressBtn('ON1')" onmouseup="releaseBtn()">ON1</button>
+                        <button class="btn-circle off" onmousedown="pressBtn('OFF1')" onmouseup="releaseBtn()">OFF1</button>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                        <button class="btn-circle on" onmousedown="pressBtn('ON2')" onmouseup="releaseBtn()">ON2</button>
+                        <button class="btn-circle off" onmousedown="pressBtn('OFF2')" onmouseup="releaseBtn()">OFF2</button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="status-display" class="status-bar">系統未送電 (請先開啟 NFB)</div>
+        </div>
+
+        <!-- 右側：外部環境模擬 -->
+        <div class="panel sim-box">
+            <h2>外部狀態模擬 (測試用)</h2>
+            <div class="sim-row">
+                <span>N.F.B 總電源</span>
+                <button id="btn-nfb" onclick="toggleNFB()" class="sim-btn danger">OFF</button>
+            </div>
+            <div class="sim-row">
+                <span>TH-RY1 (MC1 測)</span>
+                <button id="btn-th1" onclick="toggleTH1()" class="sim-btn active">正常</button>
+            </div>
+            <div class="sim-row">
+                <span>TH-RY2 (MC2 測)</span>
+                <button id="btn-th2" onclick="toggleTH2()" class="sim-btn active">正常</button>
+            </div>
+            <div class="sim-row">
+                <span>FS 浮球 (給水源)</span>
+                <button id="btn-fs" onclick="toggleFS()" class="sim-btn active">向上 (有水)</button>
+            </div>
+            <div class="sim-row" id="auto-sim-row" style="opacity: 0.4; pointer-events: none;">
+                <span>E1-E3 電極棒</span>
+                <button id="btn-water" onclick="toggleWater()" class="sim-btn active">短路 (滿水)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 系統狀態
+        let state = {
+            nfb: false,
+            cos: 'M', // 'M' or 'A'
+            mc1: false,
+            mc2: false,
+            thry1: false,
+            thry2: false,
+            fsNormal: true, // true: 有水, false: 缺水
+            waterLow: false, // true: E1-E3開路(缺水), false: 短路(滿水)
+            nextPump: 1, // MR 狀態: 1 or 2
+            btnPressed: null
+        };
+
+        function updateSystem() {
+            let bz = false;
+            let g1 = false;
+            let g2 = false;
+            let statusText = "";
+
+            if (!state.nfb) {
+                state.mc1 = false;
+                state.mc2 = false;
+                statusText = "系統未送電 (NFB OFF)";
+            } else {
+                let fault = state.thry1 || state.thry2 || !state.fsNormal;
+                
+                if (fault) {
+                    if (state.mc1 || state.mc2) {
+                        state.mc1 = false;
+                        state.mc2 = false;
+                    }
+                    bz = true; 
+                    statusText = "警報！發生過載或給水缺水 (BZ響)";
+                } else {
+                    if (state.cos === 'M') {
+                        statusText = "手動模式 (M)";
+                        if (state.btnPressed === 'ON1') state.mc1 = true;
+                        if (state.btnPressed === 'OFF1') state.mc1 = false;
+                        if (state.btnPressed === 'ON2') state.mc2 = true;
+                        if (state.btnPressed === 'OFF2') state.mc2 = false;
+                    } else if (state.cos === 'A') {
+                        statusText = "自動模式 (A) - MR 排程: 優先啟動泵浦 " + state.nextPump;
+                        if (state.waterLow) { // E1-E3 開路 (缺水)
+                            g1 = true; // X 激磁
+                            if (!state.mc1 && !state.mc2) {
+                                if (state.nextPump === 1) state.mc1 = true;
+                                else state.mc2 = true;
+                            }
+                        } else { // E1-E3 短路 (滿水)
+                            g1 = false;
+                            if (state.mc1 || state.mc2) {
+                                state.mc1 = false;
+                                state.mc2 = false;
+                                state.nextPump = state.nextPump === 1 ? 2 : 1; // 交替切換
+                            }
+                        }
+                    }
+                }
+
+                // G2 燈邏輯：MC1 與 MC2 皆未激磁時亮起
+                g2 = (!state.mc1 && !state.mc2);
+            }
+
+            // 更新燈號 UI
+            document.getElementById('ind-r1').className = 'indicator ' + (state.mc1 ? 'red-on' : '');
+            document.getElementById('ind-r2').className = 'indicator ' + (state.mc2 ? 'red-on' : '');
+            document.getElementById('ind-g1').className = 'indicator ' + (g1 ? 'green-on' : '');
+            document.getElementById('ind-g2').className = 'indicator ' + (g2 ? 'green-on' : '');
+            document.getElementById('ind-bz').className = 'indicator ' + (bz ? 'yellow-on' : '');
+            
+            document.getElementById('status-display').innerText = statusText;
+
+            // 更新自動模式專屬模擬按鈕狀態
+            let autoRow = document.getElementById('auto-sim-row');
+            if (state.cos === 'A' && state.nfb) {
+                autoRow.style.opacity = "1";
+                autoRow.style.pointerEvents = "auto";
+            } else {
+                autoRow.style.opacity = "0.4";
+                autoRow.style.pointerEvents = "none";
+            }
+        }
+
+        function pressBtn(btn) { state.btnPressed = btn; updateSystem(); }
+        function releaseBtn() { state.btnPressed = null; updateSystem(); }
+        
+        function toggleNFB() {
+            state.nfb = !state.nfb;
+            let btn = document.getElementById('btn-nfb');
+            btn.className = state.nfb ? 'sim-btn active' : 'sim-btn danger';
+            btn.innerText = state.nfb ? 'ON' : 'OFF';
+            updateSystem();
+        }
+
+        function toggleCOS() {
+            state.cos = state.cos === 'M' ? 'A' : 'M';
+            state.mc1 = false; state.mc2 = false; // 切換瞬間斷電
+            document.getElementById('btn-cos').innerText = state.cos === 'M' ? '目前模式：手動 (M)' : '目前模式：自動 (A)';
+            updateSystem();
+        }
+
+        function toggleTH1() {
+            state.thry1 = !state.thry1;
+            let btn = document.getElementById('btn-th1');
+            btn.className = state.thry1 ? 'sim-btn warning' : 'sim-btn active';
+            btn.innerText = state.thry1 ? '過載跳脫' : '正常';
+            updateSystem();
+        }
+
+        function toggleTH2() {
+            state.thry2 = !state.thry2;
+            let btn = document.getElementById('btn-th2');
+            btn.className = state.thry2 ? 'sim-btn warning' : 'sim-btn active';
+            btn.innerText = state.thry2 ? '過載跳脫' : '正常';
+            updateSystem();
+        }
+
+        function toggleFS() {
+            state.fsNormal = !state.fsNormal;
+            let btn = document.getElementById('btn-fs');
+            btn.className = state.fsNormal ? 'sim-btn active' : 'sim-btn warning';
+            btn.innerText = state.fsNormal ? '向上 (有水)' : '向下 (缺水)';
+            updateSystem();
+        }
+
+        function toggleWater() {
+            state.waterLow = !state.waterLow;
+            let btn = document.getElementById('btn-water');
+            btn.className = state.waterLow ? 'sim-btn warning' : 'sim-btn active';
+            btn.innerText = state.waterLow ? '開路 (缺水)' : '短路 (滿水)';
+            updateSystem();
+        }
+
+        // 初始化執行一次
+        updateSystem();
+    </script>
+</body>
+</html>

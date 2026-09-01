@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>室內配線乙級第2站 - 術科模擬練習</title>
+    <style>
+        /* 基礎設定 */
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f8f9fa; 
+        }
+        
+        /* 頂部標題 */
+        header { 
+            background-color: #2c3e50; 
+            color: white; 
+            padding: 15px 20px; 
+            text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+        h1 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
+
+        /* 標籤列 (可橫向滾動，適合手機) */
+        .tabs-container { 
+            display: flex; 
+            overflow-x: auto; 
+            background-color: #fff; 
+            border-bottom: 2px solid #dee2e6; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            /* 隱藏滾動條但保留滾動功能 */
+            scrollbar-width: none; 
+        }
+        .tabs-container::-webkit-scrollbar { display: none; }
+
+        /* 標籤按鈕 */
+        .tab-btn { 
+            flex: 0 0 auto; 
+            padding: 15px 25px; 
+            border: none; 
+            background: none; 
+            cursor: pointer; 
+            font-size: 1.05rem; 
+            font-weight: bold; 
+            color: #6c757d; 
+            border-bottom: 4px solid transparent; 
+            transition: all 0.2s; 
+            white-space: nowrap; 
+        }
+        .tab-btn:hover { background-color: #f1f3f5; color: #0d6efd; }
+        .tab-btn.active { color: #0d6efd; border-bottom-color: #0d6efd; }
+
+        /* 內容顯示區 (Iframe) */
+        .content-area { 
+            height: calc(100% - 120px); /* 扣除標題與選單的高度 */
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        iframe { 
+            flex: 1; 
+            border: none; 
+            width: 100%; 
+            height: 100%; 
+        }
+
+        /* 施工中佔位畫面 */
+        .empty-state { 
+            display: none; 
+            flex: 1; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+            color: #6c757d; 
+            text-align: center;
+            padding: 20px;
+        }
+        .empty-state h2 { font-size: 2rem; margin-bottom: 10px; color: #495057;}
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>室內配線乙級第2站 控制模擬</h1>
+    </header>
+
+    <div class="tabs-container" id="tabs">
+        <button class="tab-btn" onclick="switchTab(1, this)">第一題</button>
+        <button class="tab-btn" onclick="switchTab(2, this)">第二題</button>
+        <!-- 預設啟動第3題，加上 active 樣式 -->
+        <button class="tab-btn active" onclick="switchTab(3, this)">第三題</button>
+        <button class="tab-btn" onclick="switchTab(4, this)">第四題</button>
+        <button class="tab-btn" onclick="switchTab(5, this)">第五題</button>
+        <button class="tab-btn" onclick="switchTab(6, this)">第六題</button>
+        <button class="tab-btn" onclick="switchTab(7, this)">第七題</button>
+        <button class="tab-btn" onclick="switchTab(8, this)">第八題</button>
+    </div>
+
+    <div class="content-area">
+        <!-- 用 iframe 載入各題的獨立 HTML 檔案 -->
+        <iframe id="main-frame" src="q3.html"></iframe>
+        
+        <!-- 空白/未完成題目的提示畫面 -->
+        <div id="empty-message" class="empty-state">
+            <h2>🚧 盤面建置中</h2>
+            <p>這題的模擬控制盤還沒做好喔！<br>請點選上方標籤先去練習第三題。</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(questionNum, btnElement) {
+            // 移除所有按鈕的 active 狀態
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            // 為點擊的按鈕加上 active 狀態
+            btnElement.classList.add('active');
+
+            const iframe = document.getElementById('main-frame');
+            const emptyMsg = document.getElementById('empty-message');
+
+            // 判斷是否為第3題 (如果有做其他題，可以在這邊擴充)
+            if (questionNum === 3) {
+                iframe.style.display = 'block';
+                emptyMsg.style.display = 'none';
+                iframe.src = 'q3.html';
+            } else {
+                // 其他題顯示施工中
+                iframe.style.display = 'none';
+                emptyMsg.style.display = 'flex';
+                iframe.src = ''; 
+            }
+        }
+    </script>
+</body>
+</html>
