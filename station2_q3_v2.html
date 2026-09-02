@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 防搜尋引擎抓取的隱藏標籤 -->
     <meta name="robots" content="noindex, nofollow">
     <title>Panel Sim 03</title>
     <style>
@@ -18,18 +17,17 @@
             flex-direction: column; 
             align-items: center; 
         }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 15px; font-size: 1.4rem; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 10px; font-size: 1.3rem; }
         
         .main-container {
             display: flex;
             gap: 15px;
-            max-width: 1000px;
+            max-width: 900px;
             width: 100%;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        /* 統一面板風格 */
         .panel {
             background-color: #fff;
             border-radius: 10px;
@@ -48,7 +46,7 @@
             margin-bottom: 15px;
         }
 
-        /* ===== 外部模擬狀態區塊 ===== */
+        /* ===== 外部模擬狀態 ===== */
         .sim-box {
             flex: 1 1 250px; 
             max-width: 100%;
@@ -58,7 +56,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #eee;
             font-weight: bold;
             color: #444;
@@ -66,7 +64,7 @@
         }
         .sim-row:last-child { border-bottom: none; }
         .sim-btn {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -79,80 +77,66 @@
         .sim-btn.danger { background-color: #dc3545; }
         .sim-btn.warning { background-color: #fd7e14; }
 
-        /* ===== 主控制面板區塊 (緊密真實排版) ===== */
+        /* ===== 擬真主控制面板 ===== */
         .control-panel {
-            flex: 1 1 450px; /* 稍微加寬以容納橫向排列 */
+            flex: 1 1 350px; 
             max-width: 100%;
             border-top-color: #28a745;
-            background-color: #d1d5d8;
+            background-color: #cbd0d4; /* 鐵灰色盤面 */
         }
         
-        .panel-inner {
+        .panel-inner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px 5px;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .grid-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px; /* 縮減上下間距排緊密 */
-            width: 100%;
-            padding: 10px 0;
+            justify-content: center;
+            gap: 6px;
         }
 
-        /* 橫向排列容器 */
-        .flex-row {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        /* 模擬黑色配線槽 */
+        .wire-duct {
+            grid-column: span 4;
+            height: 22px;
+            background-color: #1a1a1a;
+            border-radius: 2px;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.4);
+            margin: 5px 0;
             width: 100%;
         }
 
         /* 指示燈 */
-        .ind-group { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 8px; 
-        }
         .indicator {
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             border: 3px solid #555;
-            background-color: #333;
+            background-color: #222;
             transition: all 0.2s;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.1);
         }
-        .indicator.red-on { background-color: #ff3333; box-shadow: 0 0 15px #ff3333; }
-        .indicator.green-on { background-color: #33ff33; box-shadow: 0 0 15px #33ff33; }
-        .indicator.yellow-on { background-color: #ffcc00; box-shadow: 0 0 15px #ffcc00; }
-        .ind-label { font-weight: bold; font-size: 0.9rem; color: #222; background: rgba(255,255,255,0.7); padding: 2px 6px; border-radius: 4px;}
+        .indicator.red-on { background-color: #ff2a2a; box-shadow: 0 0 18px #ff2a2a; }
+        .indicator.green-on { background-color: #2aff2a; box-shadow: 0 0 18px #2aff2a; }
+        .indicator.yellow-on { background-color: #ffcc00; box-shadow: 0 0 18px #ffcc00; }
+        .ind-label { font-weight: bold; font-size: 0.9rem; color: #111; }
 
-        /* 切換開關 */
-        .cos-switch {
-            text-align: center;
-            background: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 2px solid #aaa;
-            width: 120px;
-        }
-        .cos-btn {
-            padding: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #2196F3;
-            color: white;
-            width: 100%;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-        }
-
-        /* 圓形按鈕 */
+        /* 圓形按鈕與旋鈕 */
         .btn-circle {
             width: 55px;
             height: 55px;
             border-radius: 50%;
-            border: 3px solid #888;
+            border: 3px solid #777;
             font-weight: bold;
             font-size: 0.9rem;
             cursor: pointer;
@@ -161,90 +145,126 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.1s;
+            outline: none;
         }
         .btn-circle:active { transform: translateY(3px); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .btn-circle.on { background-color: #4CAF50; color: white; border-color: #2E7D32; }
         .btn-circle.off { background-color: #F44336; color: white; border-color: #C62828; }
         
+        .btn-circle.cos {
+            background-color: #343a40;
+            color: #fff;
+            border-color: #222;
+            font-size: 0.9rem;
+        }
+
         .status-bar {
             width: 100%;
             text-align: center;
             background-color: #343a40;
             color: #ffc107;
             padding: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
             border-radius: 5px;
             font-weight: bold;
         }
-        
-        /* ================= 懸浮泡泡選單 ================= */
-        .fab-container {
+
+        /* ================= 懸浮泡泡選單 (三條線) ================= */
+        .fab-wrapper {
             position: fixed;
             bottom: 20px;
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            align-items: flex-end;
+            gap: 10px;
             z-index: 1000;
         }
+        
+        .fab-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .fab-menu.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
 
-        .fab-btn {
+        .fab-item {
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .fab-main {
             background-color: #17a2b8;
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 12px 18px;
-            font-size: 1rem;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             transition: 0.2s;
         }
-        .fab-btn:active { transform: scale(0.95); }
-        .fab-btn.primary { background-color: #6610f2; }
+        .fab-main:active { transform: scale(0.92); }
 
         /* ================= 彈出視窗 (Modal) ================= */
         .modal-overlay {
             display: none; 
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             z-index: 1001;
             justify-content: center;
             align-items: center;
-            padding: 15px;
         }
         
         /* 一般視窗 (動作說明) */
         .modal-content {
             background: #fff;
-            padding: 25px 20px;
+            padding: 20px;
             border-radius: 12px;
-            width: 100%;
+            width: 90%;
             max-width: 450px;
             position: relative;
             max-height: 85vh;
             overflow-y: auto;
         }
 
-        /* 滿版視窗 (線路圖) */
+        /* 滿版視窗 (線路圖貼齊邊界) */
         .modal-content.full-screen {
-            max-width: 95vw;
-            height: 90vh;
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+            background: #000;
+            border-radius: 0;
             display: flex;
-            flex-direction: column;
-            padding: 15px;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content.full-screen img {
-            flex: 1;
-            object-fit: contain;
             width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
+            height: 100%;
+            object-fit: contain; /* 確保圖片不變形且放到最大 */
         }
         
         .close-btn {
@@ -257,6 +277,19 @@
             background: none;
             color: #555;
             font-weight: bold;
+            z-index: 10;
+        }
+        .modal-content.full-screen .close-btn {
+            color: white;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 15px;
+            right: 15px;
         }
         
         .modal-content h2 { margin-top: 0; color: #333; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px;}
@@ -279,7 +312,7 @@
 
     <div class="main-container">
         
-        <!-- 左側：外部環境模擬 -->
+        <!-- 外部環境設定 -->
         <div class="panel sim-box">
             <h2>外部狀態設定</h2>
             <div class="sim-row">
@@ -304,75 +337,79 @@
             </div>
         </div>
 
-        <!-- 右側：主控制面板 (依據器具配置圖重建排版) -->
+        <!-- 主控制面板 (CSS Grid 擬真佈局) -->
         <div class="panel control-panel">
             <h2>操作面板 (正視圖)</h2>
-            <div class="panel-inner">
+            <div class="panel-inner-grid">
                 
                 <!-- 第 1 排：G1 | R1 | G2 | R2 -->
-                <div class="flex-row">
-                    <div class="ind-group"><div id="ind-g1" class="indicator"></div><div class="ind-label">G1</div></div>
-                    <div class="ind-group"><div id="ind-r1" class="indicator"></div><div class="ind-label">R1</div></div>
-                    <div class="ind-group"><div id="ind-g2" class="indicator"></div><div class="ind-label">G2</div></div>
-                    <div class="ind-group"><div id="ind-r2" class="indicator"></div><div class="ind-label">R2</div></div>
-                </div>
+                <div class="grid-item"><div id="ind-g1" class="indicator"></div><div class="ind-label">G1</div></div>
+                <div class="grid-item"><div id="ind-r1" class="indicator"></div><div class="ind-label">R1</div></div>
+                <div class="grid-item"><div id="ind-g2" class="indicator"></div><div class="ind-label">G2</div></div>
+                <div class="grid-item"><div id="ind-r2" class="indicator"></div><div class="ind-label">R2</div></div>
                 
-                <!-- 第 2 排：COS | BZ -->
-                <div class="flex-row" style="padding: 0 10%;">
-                    <div class="cos-switch">
-                        <div style="margin-bottom:6px; font-weight:bold; color:#444;">COS</div>
-                        <button id="btn-cos" class="cos-btn" onclick="toggleCOS()">手動</button>
-                    </div>
-                    <div class="ind-group"><div id="ind-bz" class="indicator"></div><div class="ind-label">BZ</div></div>
+                <!-- 配線槽分隔線 -->
+                <div class="wire-duct"></div>
+
+                <!-- 第 2 排：COS 置中偏左 | BZ 置中偏右 -->
+                <div class="grid-item col-span-2">
+                    <button id="btn-cos" class="btn-circle cos" onclick="toggleCOS()">手動</button>
+                    <div class="ind-label" style="margin-top:2px;">COS</div>
+                </div>
+                <div class="grid-item col-span-2">
+                    <div id="ind-bz" class="indicator"></div>
+                    <div class="ind-label" style="margin-top:2px;">BZ</div>
                 </div>
 
+                <!-- 配線槽分隔線 -->
+                <div class="wire-duct"></div>
+
                 <!-- 第 3 排：ON1 | OFF1 | ON2 | OFF2 -->
-                <div class="flex-row">
-                    <button class="btn-circle on" onmousedown="pressBtn('ON1')" onmouseup="releaseBtn()">ON1</button>
-                    <button class="btn-circle off" onmousedown="pressBtn('OFF1')" onmouseup="releaseBtn()">OFF1</button>
-                    <button class="btn-circle on" onmousedown="pressBtn('ON2')" onmouseup="releaseBtn()">ON2</button>
-                    <button class="btn-circle off" onmousedown="pressBtn('OFF2')" onmouseup="releaseBtn()">OFF2</button>
-                </div>
+                <div class="grid-item"><button class="btn-circle on" onmousedown="pressBtn('ON1')" onmouseup="releaseBtn()">ON1</button></div>
+                <div class="grid-item"><button class="btn-circle off" onmousedown="pressBtn('OFF1')" onmouseup="releaseBtn()">OFF1</button></div>
+                <div class="grid-item"><button class="btn-circle on" onmousedown="pressBtn('ON2')" onmouseup="releaseBtn()">ON2</button></div>
+                <div class="grid-item"><button class="btn-circle off" onmousedown="pressBtn('OFF2')" onmouseup="releaseBtn()">OFF2</button></div>
 
             </div>
             <div id="status-display" class="status-bar">系統未送電 (請先開啟 NFB)</div>
         </div>
     </div>
 
-    <!-- 懸浮選單區 -->
-    <div class="fab-container">
-        <button class="fab-btn primary" onclick="openModal('circuit-modal')">🗺️ 線路圖</button>
-        <button class="fab-btn" onclick="openModal('instr-modal')">💡 動作說明</button>
+    <!-- 懸浮選單 (三條線) -->
+    <div class="fab-wrapper">
+        <div class="fab-menu" id="fab-menu">
+            <button class="fab-item" onclick="openModal('circuit-modal'); toggleMenu();">🗺️ 控制線路圖</button>
+            <button class="fab-item" onclick="openModal('instr-modal'); toggleMenu();">💡 動作說明</button>
+        </div>
+        <button class="fab-main" onclick="toggleMenu()">☰</button>
     </div>
 
     <!-- 動作說明 Modal -->
     <div class="modal-overlay" id="instr-modal" onclick="closeModal('instr-modal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModal('instr-modal')">&times;</button>
-            <h2>動作說明步驟 (已修正)</h2>
+            <h2>動作說明步驟 (依實況修正)</h2>
             <ul>
                 <li><span class="highlight">1. </span>送上電源G2亮。</li>
                 <li><span class="highlight">2. </span>切換至手動，按ON1，MC1激磁並自保持、R1亮，按OFF1、G2亮。</li>
                 <li><span class="highlight">3. </span>切換至手動，按ON2，MC2激磁並自保持、R2亮，按OFF2、G2亮。</li>
                 <li><span class="highlight">4. </span>MC1激磁時拉TH-RY1、蜂鳴器響、G2亮。MC2激磁時拉TH-RY2、蜂鳴器響、G2亮。</li>
-                <li><span class="highlight">5. </span>MC1激磁時拉FS時、<del>蜂鳴器響</del>、G2亮。MC2激磁時拉FS時、<del>蜂鳴器響</del>、G2亮。</li>
+                <li><span class="highlight">5. </span>MC1激磁時拉FS時、G2亮。MC2激磁時拉FS時、G2亮。</li>
                 <li><span class="highlight">6. </span>切換至自動，上水塔如滿水時(將電極棒E3-E1短路)，MC1(R1)、MC2(R2)其中一組會動作。且每觸碰一次，MC均互換輪替動作。</li>
             </ul>
         </div>
     </div>
 
-    <!-- 線路圖 Modal (滿版) -->
+    <!-- 線路圖 Modal (滿版貼齊邊界) -->
     <div class="modal-overlay" id="circuit-modal" onclick="closeModal('circuit-modal')">
         <div class="modal-content full-screen" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModal('circuit-modal')">&times;</button>
-            <h2>控制電路圖參考</h2>
-            <!-- 預設讀取檔名為 image.png 的圖片，只要把它上傳到跟網頁同一個資料夾就會顯示 -->
-            <img src="image.png" alt="控制電路圖 (請將圖檔命名為 image.png 放於同資料夾)">
+            <img src="image.png" alt="控制電路圖 (請將圖檔命名為 image.png)">
         </div>
     </div>
 
     <script>
-        // ======= 密碼驗證 =======
+        // ======= 密碼與選單 UI =======
         function checkPwd() {
             if (document.getElementById("pwd-input").value === "1019") {
                 document.getElementById("login-overlay").style.display = "none";
@@ -385,75 +422,99 @@
             if (e.key === "Enter") { e.preventDefault(); checkPwd(); }
         });
 
-        // ======= Modal 控制 =======
+        function toggleMenu() {
+            document.getElementById('fab-menu').classList.toggle('show');
+        }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // ======= 系統狀態邏輯 =======
+        // ======= 系統核心邏輯 (精準對應硬體電路) =======
         let state = {
-            nfb: false, cos: 'M', mc1: false, mc2: false,
+            nfb: false, cos: 'M',
+            mc1_latch: false, mc2_latch: false, // 記憶馬達是否被指令啟動
             thry1: false, thry2: false, fsNormal: true, waterLow: false,
             nextPump: 1, btnPressed: null
         };
 
         function updateSystem() {
             let bz = false, g1 = false, g2 = false, statusText = "";
+            let mc1_actual = false, mc2_actual = false;
 
             if (!state.nfb) {
-                state.mc1 = false; state.mc2 = false;
+                state.mc1_latch = false; state.mc2_latch = false;
                 statusText = "系統未送電 (NFB OFF)";
             } else {
-                let fault_th = state.thry1 || state.thry2;
                 let fault_fs = !state.fsNormal;
                 
-                // 修正：依據修改後的動作說明第5點，拉FS時「不響蜂鳴器」。只有TH-RY跳脫時響BZ。
-                if (fault_th) {
-                    bz = true;
-                }
+                // 1. 處理 FS 浮球與自動水塔燈號 (G1)
+                // G1 並聯於 X，電源直接取自 D-F (不受 FS 影響)
+                if (state.waterLow) g1 = true; else g1 = false;
 
-                // 過載或給水缺水都會強制停止馬達
-                if (fault_th || fault_fs) {
-                    state.mc1 = false; 
-                    state.mc2 = false; 
-                    if (fault_th) statusText = "警報！發生過載 (BZ響)";
-                    if (fault_fs) statusText = "異常！給水源缺水 (馬達停)";
+                if (fault_fs) {
+                    // FS 缺水，切斷 COS 電源，馬達強制停止，清除自保持
+                    state.mc1_latch = false;
+                    state.mc2_latch = false;
+                    statusText = "異常！給水源缺水 (馬達停)";
                 } else {
+                    // 2. 正常供電下處理 COS 模式與指令
                     if (state.cos === 'M') {
                         statusText = "手動模式 (M)";
-                        g1 = false; 
                         
-                        if (state.btnPressed === 'ON1' && !state.mc2) state.mc1 = true;
-                        if (state.btnPressed === 'OFF1') state.mc1 = false;
+                        // 電氣互鎖：若另一台已啟動，則無法設定 latch
+                        if (state.btnPressed === 'ON1' && !state.mc2_latch) state.mc1_latch = true;
+                        if (state.btnPressed === 'OFF1') state.mc1_latch = false;
                         
-                        if (state.btnPressed === 'ON2' && !state.mc1) state.mc2 = true;
-                        if (state.btnPressed === 'OFF2') state.mc2 = false;
+                        if (state.btnPressed === 'ON2' && !state.mc1_latch) state.mc2_latch = true;
+                        if (state.btnPressed === 'OFF2') state.mc2_latch = false;
                     } else if (state.cos === 'A') {
                         statusText = "自動模式 (A) - 優先啟動泵浦 " + state.nextPump;
                         if (state.waterLow) {
-                            g1 = true; 
-                            if (!state.mc1 && !state.mc2) {
-                                if (state.nextPump === 1) state.mc1 = true;
-                                else state.mc2 = true;
+                            if (!state.mc1_latch && !state.mc2_latch) {
+                                if (state.nextPump === 1) state.mc1_latch = true;
+                                else state.mc2_latch = true;
                             }
                         } else {
-                            g1 = false;
-                            if (state.mc1 || state.mc2) {
-                                state.mc1 = false; 
-                                state.mc2 = false;
-                                state.nextPump = state.nextPump === 1 ? 2 : 1;
+                            if (state.mc1_latch || state.mc2_latch) {
+                                state.mc1_latch = false;
+                                state.mc2_latch = false;
+                                state.nextPump = state.nextPump === 1 ? 2 : 1; // 交替
                             }
                         }
                     }
                 }
-                g2 = (!state.mc1 && !state.mc2);
+
+                // 3. 處理過載 (TH-RY) 與蜂鳴器 (BZ) 邏輯
+                // 根據電路圖：TH-RY 的 a 接點電源來自於啟動迴路，故只有該馬達處於啟動指令(latch)時跳脫，BZ 才會響。
+                if (state.mc1_latch) {
+                    if (state.thry1) {
+                        mc1_actual = false; // 被 b 接點切斷
+                        bz = true;          // a 接點導通響警報
+                        statusText = "警報！MC1過載 (BZ響)";
+                    } else {
+                        mc1_actual = true;
+                    }
+                }
+                
+                if (state.mc2_latch) {
+                    if (state.thry2) {
+                        mc2_actual = false;
+                        bz = true;
+                        statusText = "警報！MC2過載 (BZ響)";
+                    } else {
+                        mc2_actual = true;
+                    }
+                }
+                
+                // G2 串聯兩個 MC 的 b 接點
+                g2 = (!mc1_actual && !mc2_actual);
             }
 
-            document.getElementById('ind-r1').className = 'indicator ' + (state.mc1 ? 'red-on' : '');
-            document.getElementById('ind-r2').className = 'indicator ' + (state.mc2 ? 'red-on' : '');
+            // 更新 UI 畫面
+            document.getElementById('ind-r1').className = 'indicator ' + (mc1_actual ? 'red-on' : '');
+            document.getElementById('ind-r2').className = 'indicator ' + (mc2_actual ? 'red-on' : '');
             document.getElementById('ind-g1').className = 'indicator ' + (g1 ? 'green-on' : '');
             document.getElementById('ind-g2').className = 'indicator ' + (g2 ? 'green-on' : '');
             document.getElementById('ind-bz').className = 'indicator ' + (bz ? 'yellow-on' : '');
-            
             document.getElementById('status-display').innerText = statusText;
 
             let autoRow = document.getElementById('auto-sim-row');
@@ -477,7 +538,7 @@
 
         function toggleCOS() {
             state.cos = state.cos === 'M' ? 'A' : 'M';
-            state.mc1 = false; state.mc2 = false;
+            state.mc1_latch = false; state.mc2_latch = false;
             document.getElementById('btn-cos').innerText = state.cos === 'M' ? '手動' : '自動';
             updateSystem();
         }
