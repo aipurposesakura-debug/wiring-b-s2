@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乙級室內配線 第二站第一題 - 全螢幕教學版</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e272e;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 讓全螢幕時內容也能置中 */
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .header-title { color: #ecf0f1; margin-bottom: 20px; font-size: 24px; letter-spacing: 2px; font-weight: bold; }
+        .container { display: flex; gap: 40px; justify-content: center; align-items: flex-start; }
+
+        /* 畫布共用設定 */
+        .diagram { position: relative; background-color: #f4f6f7; border: 3px solid #2c3e50; box-sizing: border-box; box-shadow: 8px 8px 20px rgba(0,0,0,0.6); }
+        .diagram-title { position: absolute; top: -35px; width: 100%; text-align: center; color: #ecf0f1; font-size: 20px; font-weight: bold; }
+
+        /* 藍色線槽 */
+        .wire-duct { position: absolute; background-color: #4bcffa; z-index: 1; border: 1px solid #0abde3; }
+
+        /* 靜態元件 */
+        .static-box { position: absolute; border: 2px solid #555; background-color: #d1d8e0; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; color: #333; z-index: 2; }
+        .static-circle { position: absolute; border: 2px solid #555; background-color: #d1d8e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; color: #333; z-index: 2; }
+
+        /* 動態器具 */
+        .component { position: absolute; border: 2px solid #2f3640; background-color: #bdc3c7; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; color: #2c3e50; z-index: 3; transition: all 0.2s ease; cursor: default; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        .component .status { font-size: 11px; margin-top: 5px; background-color: #7f8c8d; color: #fff; padding: 2px 6px; border-radius: 4px; }
+
+        /* 器具動作樣式 */
+        .component.active { background-color: #81ecec; border-color: #00cec9; box-shadow: 0 0 15px #00cec9; }
+        .component.active .status { background-color: #00cec9; color: #000; font-weight: bold;}
+        .component.active-warn { background-color: #ffeaa7; border-color: #fdcb6e; box-shadow: 0 0 15px #fdcb6e; }
+        .component.active-warn .status { background-color: #fdcb6e; color: #000; font-weight: bold;}
+
+        /* 面板 UI */
+        .circle-ui { position: absolute; border: 3px solid #2f3640; background-color: #d1d8e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: bold; color: #2c3e50; z-index: 3; transition: all 0.2s ease; }
+        .light-g.on { background-color: #00b894; color: #fff; box-shadow: 0 0 25px #00b894; border-color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        .light-r.on { background-color: #d63031; color: #fff; box-shadow: 0 0 25px #d63031; border-color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        .light-y.on { background-color: #fdcb6e; color: #000; box-shadow: 0 0 25px #fdcb6e; border-color: #fff; }
+        .buzzer.on { background-color: #e17055; color: #fff; box-shadow: 0 0 25px #e17055; border-color: #fff; animation: flash 0.5s infinite; }
+        @keyframes flash { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        .btn { cursor: pointer; box-shadow: 0 4px #7f8c8d; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0px #7f8c8d; }
+
+        .info-panel { margin-top: 30px; background-color: #34495e; color: #ecf0f1; padding: 20px; border-radius: 8px; width: 100%; max-width: 780px; border-left: 5px solid #0fbcf9; line-height: 1.6; font-size: 16px;}
+        
+        /* 控制按鈕區 */
+        .controls { margin-top: 20px; display: flex; gap: 15px; }
+        .action-btn { padding: 10px 20px; cursor: pointer; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: background-color 0.2s;}
+        #sound-toggle { background: #e17055; border: 2px solid #d63031; }
+        #sound-toggle:hover { background: #d63031; }
+        #fullscreen-toggle { background: #0984e3; border: 2px solid #74b9ff; }
+        #fullscreen-toggle:hover { background: #74b9ff; }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">乙級室內配線 第二站第一題</div>
+
+    <div class="container">
+        <!-- ================= 左側：器具板 ================= -->
+        <div class="diagram" style="width: 420px; height: 500px;">
+            <div class="diagram-title">器具板 (Base Plate)</div>
+            
+            <!-- 底盤線槽 -->
+            <div class="wire-duct" style="left: 120px; top: 40px; width: 230px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 140px; width: 330px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 290px; width: 330px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 430px; width: 330px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 325px; top: 40px; width: 25px; height: 415px;"></div>
+
+            <!-- 第一排靜態器具 -->
+            <div class="static-box" style="left: 20px; top: 20px; width: 60px; height: 35px;">TB1</div>
+            <div class="static-box" style="left: 20px; top: 65px; width: 70px; height: 65px;">NFB</div>
+            <div class="static-circle" style="left: 130px; top: 75px; width: 45px; height: 45px;">D-F</div>
+            <div class="static-circle" style="left: 190px; top: 75px; width: 45px; height: 45px;">D-F</div>
+            <div class="static-box" style="left: 370px; top: 100px; width: 30px; height: 280px;">TB3</div>
+
+            <!-- 上排 MCF, MCR, TR -->
+            <div class="component" id="comp-mcf" style="left: 25px; top: 185px; width: 80px; height: 85px;">MCF<span class="status">OFF</span></div>
+            <div class="component" id="comp-mcr" style="left: 130px; top: 185px; width: 80px; height: 85px;">MCR<span class="status">OFF</span></div>
+            <div class="component" id="comp-tr" style="left: 235px; top: 185px; width: 60px; height: 85px;">TR<span class="status" id="tr-time">4s</span></div>
+
+            <!-- 下排 TH-RY, MCD, MCS -->
+            <div class="component" id="comp-thry" style="left: 25px; top: 355px; width: 75px; height: 45px; cursor: pointer;" title="點擊模擬過載跳脫">TH-RY<span class="status">正常</span></div>
+            <div class="component" id="comp-mcd" style="left: 130px; top: 335px; width: 80px; height: 85px;">MCD<span class="status">OFF</span></div>
+            <div class="component" id="comp-mcs" style="left: 235px; top: 335px; width: 80px; height: 85px;">MCS<span class="status">OFF</span></div>
+
+            <!-- 底部靜態器具 -->
+            <div class="static-box" style="left: 20px; top: 465px; width: 220px; height: 25px;">TB2</div>
+            <div style="position: absolute; left: 260px; top: 468px; font-weight: bold; font-size: 14px; color: #333; letter-spacing: 2px;">○○○○G</div>
+        </div>
+
+        <!-- ================= 右側：操作面板 ================= -->
+        <div class="diagram" style="width: 320px; height: 500px;">
+            <div class="diagram-title">操作面板 (正視圖)</div>
+
+            <!-- 鉸鏈圖示 -->
+            <div class="static-box" style="left: 15px; top: 225px; width: 25px; height: 70px; flex-direction: column; gap: 4px;">
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+                <div style="width: 12px; height: 2px; background: #555;"></div>
+            </div>
+
+            <!-- 上排燈號 (G, R, Y, BZ) -->
+            <div class="circle-ui light-g on" id="light-g" style="left: 50px; top: 175px; width: 45px; height: 45px;">G</div>
+            <div class="circle-ui light-r" id="light-r" style="left: 110px; top: 175px; width: 45px; height: 45px;">R</div>
+            <div class="circle-ui light-y" id="light-y" style="left: 170px; top: 175px; width: 45px; height: 45px;">Y</div>
+            <div class="circle-ui buzzer" id="buzzer" style="left: 230px; top: 175px; width: 45px; height: 45px;">BZ</div>
+
+            <!-- 下排按鈕 (FWD, REV, OFF) -->
+            <button class="circle-ui btn" id="btn-fwd" style="left: 50px; top: 295px; width: 50px; height: 50px;">FWD</button>
+            <button class="circle-ui btn" id="btn-rev" style="left: 120px; top: 295px; width: 50px; height: 50px;">REV</button>
+            <button class="circle-ui btn" id="btn-off" style="left: 190px; top: 295px; width: 50px; height: 50px;">OFF</button>
+        </div>
+    </div>
+
+    <!-- 附加功能控制區 -->
+    <div class="controls">
+        <button id="sound-toggle" class="action-btn">🔊 開啟過載蜂鳴音效</button>
+        <button id="fullscreen-toggle" class="action-btn">🔲 進入全螢幕</button>
+    </div>
+
+    <!-- 資訊與解說 -->
+    <div class="info-panel">
+        <strong>目前狀態：</strong> <span id="status-text">系統停止。</span><br>
+        <strong>動作解說：</strong> <span id="logic-text" style="color: #0fbcf9;">G (綠燈) 亮起，系統待機中。請按下 FWD 或 REV 啟動。</span>
+    </div>
+
+    <script>
+        let state = 'STOP'; 
+        let countdownTimer = null;
+        const SET_TIME = 4; 
+        let soundEnabled = false;
+        let audioCtx = null;
+        let osc = null;
+
+        const compMCF = document.getElementById('comp-mcf');
+        const compMCR = document.getElementById('comp-mcr');
+        const compMCS = document.getElementById('comp-mcs');
+        const compMCD = document.getElementById('comp-mcd');
+        const compTR = document.getElementById('comp-tr');
+        const compTHRY = document.getElementById('comp-thry');
+        const trTimeDisplay = document.getElementById('tr-time');
+
+        const buzzer = document.getElementById('buzzer');
+        const lightG = document.getElementById('light-g');
+        const lightR = document.getElementById('light-r');
+        const lightY = document.getElementById('light-y');
+        
+        const statusText = document.getElementById('status-text');
+        const logicText = document.getElementById('logic-text');
+        const fullscreenBtn = document.getElementById('fullscreen-toggle');
+
+        // 音效控制
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').innerText = soundEnabled ? "🔊 聲音已開啟" : "🔇 聲音已關閉";
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        });
+
+        // 全螢幕控制
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`無法進入全螢幕模式: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                fullscreenBtn.innerText = "🔳 退出全螢幕";
+            } else {
+                fullscreenBtn.innerText = "🔲 進入全螢幕";
+            }
+        });
+
+        function startBuzzer() {
+            if (soundEnabled && audioCtx && !osc) {
+                osc = audioCtx.createOscillator();
+                osc.type = 'square'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                const gainNode = audioCtx.createGain(); gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start();
+            }
+        }
+        function stopBuzzer() { if (osc) { osc.stop(); osc = null; } }
+
+        function setComp(comp, isActive, isWarn = false) {
+            comp.className = isWarn ? 'component active-warn' : (isActive ? 'component active' : 'component');
+            comp.querySelector('.status').innerText = isActive || isWarn ? (isWarn && comp.id==='comp-thry' ? '跳脫' : 'ON') : (comp.id==='comp-thry' ? '正常' : 'OFF');
+        }
+
+        function updateUI() {
+            setComp(compMCF, false); setComp(compMCR, false);
+            setComp(compMCS, false); setComp(compMCD, false);
+            setComp(compTR, false); setComp(compTHRY, false);
+            buzzer.classList.remove('on'); lightG.classList.remove('on');
+            lightY.classList.remove('on'); lightR.classList.remove('on');
+            stopBuzzer();
+
+            switch (state) {
+                case 'STOP':
+                    lightG.classList.add('on');
+                    trTimeDisplay.innerText = `${SET_TIME}s`;
+                    statusText.innerHTML = "系統停止";
+                    logicText.innerHTML = "<span style='color: #0fbcf9;'>G (綠燈) 亮</span>，系統待機。";
+                    break;
+                case 'FWD_STAR':
+                    setComp(compMCF, true); setComp(compMCS, true); setComp(compTR, true);
+                    lightY.classList.add('on');
+                    statusText.innerHTML = "正轉 Y啟動";
+                    logicText.innerHTML = "<span style='color:#00cec9;'>MCF、MCS 動作</span>，<span style='color:#fdcb6e;'>Y (黃燈) 亮</span>，TR 開始倒數。";
+                    break;
+                case 'FWD_DELTA':
+                    setComp(compMCF, true); setComp(compMCD, true);
+                    trTimeDisplay.innerText = "UP"; lightR.classList.add('on');
+                    statusText.innerHTML = "正轉 Δ運轉";
+                    logicText.innerHTML = "TR 時間到，<span style='color:#00cec9;'>MCS 斷，MCD 動作</span>，<span style='color:#d63031;'>R (紅燈) 亮</span>。";
+                    break;
+                case 'REV_STAR':
+                    setComp(compMCR, true); setComp(compMCS, true); setComp(compTR, true);
+                    lightY.classList.add('on');
+                    statusText.innerHTML = "反轉 Y啟動";
+                    logicText.innerHTML = "<span style='color:#00cec9;'>MCR、MCS 動作</span>，<span style='color:#fdcb6e;'>Y (黃燈) 亮</span>，TR 開始倒數。";
+                    break;
+                case 'REV_DELTA':
+                    setComp(compMCR, true); setComp(compMCD, true);
+                    trTimeDisplay.innerText = "UP"; lightR.classList.add('on');
+                    statusText.innerHTML = "反轉 Δ運轉";
+                    logicText.innerHTML = "TR 時間到，<span style='color:#00cec9;'>MCS 斷，MCD 動作</span>，<span style='color:#d63031;'>R (紅燈) 亮</span>。";
+                    break;
+                case 'OVERLOAD':
+                    setComp(compTHRY, false, true); 
+                    buzzer.classList.add('on'); startBuzzer();
+                    trTimeDisplay.innerText = `${SET_TIME}s`;
+                    statusText.innerHTML = "<span style='color:#d63031;'>過載跳脫</span>";
+                    logicText.innerHTML = "TH-RY 動作，控制電路斷電。<span style='color:#e17055;'>BZ (蜂鳴器) 響起</span>。點擊 TH-RY 復歸。";
+                    break;
+            }
+        }
+
+        function startTR(nextState) {
+            let time = SET_TIME;
+            trTimeDisplay.innerText = `${time}s`;
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                time--;
+                if (time > 0) trTimeDisplay.innerText = `${time}s`;
+                else { clearInterval(countdownTimer); state = nextState; updateUI(); }
+            }, 1000);
+        }
+
+        document.getElementById('btn-fwd').addEventListener('mousedown', () => {
+            if (state === 'STOP') { state = 'FWD_STAR'; updateUI(); startTR('FWD_DELTA'); }
+        });
+        document.getElementById('btn-rev').addEventListener('mousedown', () => {
+            if (state === 'STOP') { state = 'REV_STAR'; updateUI(); startTR('REV_DELTA'); }
+        });
+        document.getElementById('btn-off').addEventListener('mousedown', () => {
+            if (state !== 'OVERLOAD') { clearInterval(countdownTimer); state = 'STOP'; updateUI(); }
+        });
+        document.getElementById('comp-thry').addEventListener('mousedown', () => {
+            if (state !== 'OVERLOAD') { clearInterval(countdownTimer); state = 'OVERLOAD'; updateUI(); }
+            else { state = 'STOP'; updateUI(); }
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
