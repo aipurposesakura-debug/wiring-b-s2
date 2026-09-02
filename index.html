@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- 防搜尋引擎抓取的隱藏標籤 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>室內配線乙級第2站 - 術科模擬練習</title>
     <style>
         /* 基礎設定 */
         body, html { 
-            margin: 0; padding: 0; height: 100%; 
+            margin: 0; padding: 0; 
+            /* 移除原本的 height: 100%，讓網頁可以產生整頁滾動 */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f8f9fa; 
         }
@@ -55,7 +57,9 @@
 
         /* 內容顯示區 (Iframe) */
         .content-area { 
-            height: calc(100% - 120px); /* 扣除標題與選單的高度 */
+            /* 將高度改為 100vh (整個螢幕高) 加上最小高度，讓標題可以被滑走 */
+            height: 100vh; 
+            min-height: 1200px; /* 確保高度足夠容納您的控制盤 */
             width: 100%; 
             display: flex; 
             flex-direction: column; 
@@ -82,6 +86,14 @@
     </style>
 </head>
 <body>
+
+    <!-- 密碼鎖遮罩 -->
+    <div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+        <h2 style="margin-bottom: 20px; font-size: 1.8rem;">🔒 系統已鎖定</h2>
+        <input type="password" id="pwd-input" placeholder="請輸入密碼" style="padding: 12px; font-size: 1.2rem; border-radius: 8px; border: none; margin-bottom: 15px; text-align: center; width: 200px; outline: none; color: #333;">
+        <button onclick="checkPwd()" style="padding: 10px 25px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; background: #0d6efd; color: white; font-weight: bold;">解鎖</button>
+        <p id="error-msg" style="color: #ff6b6b; margin-top: 15px; font-weight: bold; display: none;">❌ 密碼錯誤，請重試！</p>
+    </div>
 
     <header>
         <h1>室內配線乙級第2站 控制模擬</h1>
@@ -111,6 +123,25 @@
     </div>
 
     <script>
+        // ======= 密碼機制 =======
+        function checkPwd() {
+            if (document.getElementById("pwd-input").value === "1019") {
+                document.getElementById("login-overlay").style.display = "none";
+            } else {
+                document.getElementById("error-msg").style.display = "block";
+                document.getElementById("pwd-input").value = "";
+            }
+        }
+        
+        // 支援按 Enter 鍵解鎖
+        document.getElementById("pwd-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") { 
+                e.preventDefault(); 
+                checkPwd(); 
+            }
+        });
+
+        // ======= 頁籤切換機制 =======
         function switchTab(questionNum, btnElement) {
             // 移除所有按鈕的 active 狀態
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -120,7 +151,7 @@
             const iframe = document.getElementById('main-frame');
             const emptyMsg = document.getElementById('empty-message');
 
-            // 建立題目與檔案名稱的對應表 (未來新增只需在這裡加一行)
+            // 建立題目與檔案名稱的對應表
             const fileMap = {
                 1: '01.html',
                 2: '02-03.html',
