@@ -100,7 +100,7 @@
     </div>
 
     <div class="content-area">
-        <!-- 載入你指定的檔名 -->
+        <!-- 預設載入第3題 -->
         <iframe id="main-frame" src="station2_q3_v2.html"></iframe>
         
         <!-- 空白/未完成題目的提示畫面 -->
@@ -120,13 +120,20 @@
             const iframe = document.getElementById('main-frame');
             const emptyMsg = document.getElementById('empty-message');
 
-            // 判斷第3題，並載入指定的檔名
-            if (questionNum === 3) {
+            // 建立題目與檔案名稱的對應表 (未來新增只需在這裡加一行)
+            const fileMap = {
+                1: '01.html',
+                2: '02-03.html',
+                3: 'station2_q3_v2.html'
+            };
+
+            // 判斷該題是否有設定對應的檔案
+            if (fileMap[questionNum]) {
                 iframe.style.display = 'block';
                 emptyMsg.style.display = 'none';
-                iframe.src = 'station2_q3_v2.html';
+                iframe.src = fileMap[questionNum];
             } else {
-                // 其他題顯示施工中
+                // 沒有檔案的題目顯示施工中
                 iframe.style.display = 'none';
                 emptyMsg.style.display = 'flex';
                 iframe.src = ''; 
