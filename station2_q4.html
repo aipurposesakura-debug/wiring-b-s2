@@ -16,6 +16,10 @@
             flex-direction: column;
             align-items: center;
             position: relative; 
+             /* 👇 1. 加上這行，讓網頁最低高度等於螢幕高度 */
+            min-height: 100vh; 
+            /* 👇 2. 加上這行，避免 padding 造成畫面出現不必要的捲動條 */
+            box-sizing: border-box;
             padding-bottom: 80px; /* 在內容最底部預留空間給按鈕 */
         }
 
