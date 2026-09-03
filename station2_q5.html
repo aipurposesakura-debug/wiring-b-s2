@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel Sim 05 - 乙級室內配線 第二站第五題</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e272e;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-title { color: #ecf0f1; margin-bottom: 30px; font-size: 24px; letter-spacing: 2px; font-weight: bold; text-align: center; }
+        .container { display: flex; gap: 40px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+
+        /* 畫布共用設定 */
+        .diagram { position: relative; background-color: #f4f6f7; border: 3px solid #2c3e50; box-sizing: border-box; box-shadow: 8px 8px 20px rgba(0,0,0,0.6); }
+        .diagram-title { position: absolute; top: -35px; width: 100%; text-align: center; color: #ecf0f1; font-size: 20px; font-weight: bold; }
+
+        /* 線槽 */
+        .wire-duct { position: absolute; background-color: #4bcffa; z-index: 1; border: 1px solid #0abde3; }
+
+        /* 靜態元件 */
+        .static-box { position: absolute; border: 2px solid #555; background-color: #d1d8e0; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; color: #333; z-index: 2; text-align: center; flex-direction: column;}
+        .static-circle { position: absolute; border: 2px solid #555; background-color: #d1d8e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; color: #333; z-index: 2; }
+
+        /* 動態器具 */
+        .component { position: absolute; border: 2px solid #2f3640; background-color: #bdc3c7; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; color: #2c3e50; z-index: 3; transition: all 0.2s ease; cursor: default; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        .component .status { font-size: 11px; margin-top: 5px; background-color: #7f8c8d; color: #fff; padding: 2px 6px; border-radius: 4px; }
+        .component .sub-label { font-size: 11px; color: #555; margin-top: -2px; }
+
+        .component.active { background-color: #81ecec; border-color: #00cec9; box-shadow: 0 0 15px #00cec9; }
+        .component.active .status { background-color: #00cec9; color: #000; font-weight: bold;}
+        .component.active-warn { background-color: #ffeaa7; border-color: #fdcb6e; box-shadow: 0 0 15px #fdcb6e; }
+        .component.active-warn .status { background-color: #d63031; color: #fff; font-weight: bold;}
+        .component.timing { background-color: #fab1a0; border-color: #e17055; box-shadow: 0 0 15px #e17055; }
+        .component.timing .status { background-color: #e17055; color: #fff; font-weight: bold;}
+
+        /* 計數器顯示 */
+        .counter-display { background: #000; color: #ff0000; font-family: 'Courier New', Courier, monospace; font-size: 24px; font-weight: bold; padding: 5px 10px; border-radius: 4px; border: 2px solid #555; letter-spacing: 2px;}
+
+        /* 面板 UI */
+        .circle-ui { position: absolute; border: 3px solid #2f3640; background-color: #d1d8e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: bold; color: #2c3e50; z-index: 3; transition: all 0.2s ease; }
+        
+        .light-y.on { background-color: #fdcb6e; color: #000; box-shadow: 0 0 25px #fdcb6e; border-color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5);}
+        .light-r.on { background-color: #d63031; color: #fff; box-shadow: 0 0 25px #d63031; border-color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        .buzzer.on { background-color: #e17055; color: #fff; box-shadow: 0 0 25px #e17055; border-color: #fff; animation: flash 0.5s infinite; }
+        @keyframes flash { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        .btn { cursor: pointer; box-shadow: 0 4px #7f8c8d; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0px #7f8c8d; }
+        .btn-green { color: #00b894; }
+        .btn-red { color: #d63031; }
+
+        .info-panel { margin-top: 20px; background-color: #34495e; color: #ecf0f1; padding: 20px; border-radius: 8px; width: 100%; max-width: 820px; border-left: 5px solid #0fbcf9; line-height: 1.6; font-size: 16px;}
+        
+        .controls { margin-top: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .action-btn { padding: 10px 20px; cursor: pointer; color: #fff; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: background-color 0.2s;}
+        
+        .btn-ls { background: #0984e3; border: 2px solid #74b9ff; font-size: 16px; padding: 12px 25px;}
+        .btn-ls:hover { background: #74b9ff; }
+        .btn-ls:active { transform: translateY(2px); }
+        
+        #sound-toggle { background: #e17055; border: 2px solid #d63031; }
+        #sound-toggle:hover { background: #d63031; }
+        #fullscreen-toggle { background: #636e72; border: 2px solid #b2bec3; }
+        #fullscreen-toggle:hover { background: #b2bec3; }
+
+        /* ================= 懸浮泡泡選單 (FAB) ================= */
+        .fab-wrapper { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 1000; }
+        .fab-menu { display: flex; flex-direction: column; gap: 10px; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .fab-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .fab-item { background-color: #fff; color: #333; border: 2px solid #ddd; border-radius: 8px; padding: 10px 15px; font-size: 1rem; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .fab-item:hover { background-color: #f1f2f6; }
+        .fab-main { background-color: #00cec9; color: #2d3436; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .fab-main:active { transform: scale(0.92); }
+
+        /* ================= 彈出視窗 (Modal) ================= */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 12px; width: 90%; max-width: 550px; position: relative; max-height: 85vh; overflow-y: auto; color: #2d3436; }
+        .modal-content.full-screen { width: 100vw; height: 100vh; padding: 0; background: #000; border-radius: 0; display: flex; justify-content: center; align-items: center; }
+        .modal-content.full-screen img { width: 100%; height: 100%; object-fit: contain; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 2rem; cursor: pointer; border: none; background: none; color: #555; font-weight: bold; z-index: 10; }
+        .modal-content.full-screen .close-btn { color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; top: 15px; right: 15px; }
+        .modal-content h2 { margin-top: 0; color: #2c3e50; font-size: 1.4rem; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        .modal-content ul { padding-left: 20px; line-height: 1.8; color: #444; margin-bottom: 0; font-size: 1rem;}
+        .highlight { color: #d63031; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">乙級室內配線 第二站第五題<br>沖床機自動計數直流煞車控制電路</div>
+
+    <div class="container">
+        <!-- ================= 左側：器具板 ================= -->
+        <div class="diagram" style="width: 500px; height: 520px;">
+            <div class="diagram-title">器具板 (Base Plate)</div>
+            
+            <!-- 線槽 -->
+            <div class="wire-duct" style="left: 100px; top: 20px; width: 280px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 110px; width: 360px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 270px; width: 360px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 20px; top: 430px; width: 360px; height: 25px;"></div>
+            <div class="wire-duct" style="left: 400px; top: 20px; width: 25px; height: 435px;"></div>
+
+            <!-- 第一排元件 -->
+            <div class="static-box" style="left: 20px; top: 20px; width: 60px; height: 35px;">TB1</div>
+            <div class="static-circle" style="left: 95px; top: 60px; width: 35px; height: 35px;">D-F3</div>
+            <div class="static-circle" style="left: 140px; top: 60px; width: 35px; height: 35px;">D-F4</div>
+            <div class="static-box" style="left: 190px; top: 50px; width: 80px; height: 50px;">變壓器<br><span style="font-size:10px">(Tr & REC)</span></div>
+            <div class="static-circle" style="left: 285px; top: 60px; width: 35px; height: 35px;">D-F1</div>
+            <div class="static-circle" style="left: 330px; top: 60px; width: 35px; height: 35px;">D-F2</div>
+
+            <!-- 第二排元件 (主要接觸器與計數器) -->
+            <div class="static-box" style="left: 20px; top: 155px; width: 50px; height: 80px;">NFB</div>
+            <div class="component" id="comp-mc" style="left: 90px; top: 145px; width: 70px; height: 100px;">MC<div class="sub-label">運轉</div><span class="status">OFF</span></div>
+            
+            <!-- TH-RY 附掛在 MC 下方，點擊模擬跳脫 -->
+            <div class="component" id="comp-thry" style="left: 90px; top: 235px; width: 70px; height: 30px; background-color: #bdc3c7; cursor: pointer;" title="點擊模擬過載跳脫">TH-RY<span class="status">正常</span></div>
+            
+            <div class="component" id="comp-mcb" style="left: 170px; top: 145px; width: 70px; height: 100px;">MCB<div class="sub-label">煞車</div><span class="status">OFF</span></div>
+            
+            <div class="static-box" style="left: 260px; top: 150px; width: 120px; height: 90px; background:#34495e; color:#fff; border-color:#2c3e50;">
+                <div style="font-size: 12px; margin-bottom: 5px;">COUNTER</div>
+                <div class="counter-display" id="counter-val">0</div>
+            </div>
+
+            <!-- 第三排元件 (Relay 與 Timer) -->
+            <div class="component" id="comp-x1" style="left: 40px; top: 315px; width: 60px; height: 80px;">X1<span class="status">OFF</span></div>
+            <div class="component" id="comp-x2" style="left: 120px; top: 315px; width: 60px; height: 80px;">X2<span class="status">OFF</span></div>
+            <div class="component" id="comp-tr1" style="left: 200px; top: 315px; width: 60px; height: 80px;">TR1<div class="sub-label">煞車時間</div><span class="status">待命</span></div>
+            <div class="component" id="comp-tr2" style="left: 280px; top: 315px; width: 60px; height: 80px;">TR2<div class="sub-label">歸零延遲</div><span class="status">待命</span></div>
+
+            <!-- 端子台 -->
+            <div class="static-box" style="left: 20px; top: 470px; width: 70px; height: 25px;">TB2</div>
+            <div class="static-box" style="left: 110px; top: 470px; width: 70px; height: 25px;">TB5</div>
+            <div class="static-box" style="left: 200px; top: 470px; width: 70px; height: 25px;">TB6</div>
+        </div>
+
+        <!-- ================= 右側：操作面板 ================= -->
+        <div class="diagram" style="width: 300px; height: 520px;">
+            <div class="diagram-title">操作面板 (正視圖)</div>
+
+            <!-- 指示燈 -->
+            <div class="circle-ui light-y" id="light-yl" style="left: 80px; top: 70px; width: 50px; height: 50px;">YL</div>
+            <div class="circle-ui light-r" id="light-rl" style="left: 170px; top: 70px; width: 50px; height: 50px;">RL</div>
+
+            <!-- 按鈕 -->
+            <button class="circle-ui btn btn-green" id="btn-on" style="left: 80px; top: 180px; width: 50px; height: 50px;">ON</button>
+            <button class="circle-ui btn btn-red" id="btn-off" style="left: 170px; top: 180px; width: 50px; height: 50px;">OFF</button>
+
+            <!-- 蜂鳴器 -->
+            <div class="circle-ui buzzer" id="buzzer" style="left: 125px; top: 300px; width: 50px; height: 50px;">BZ</div>
+            <div style="position: absolute; left: 115px; top: 360px; font-weight: bold; color: #555;">蜂鳴器</div>
+        </div>
+    </div>
+
+    <!-- 輔助控制與狀態 -->
+    <div class="controls">
+        <button id="btn-ls" class="action-btn btn-ls">⚙️ 按下微動開關 (LS) 計數</button>
+        <div style="width: 2px; background:#7f8c8d; margin: 0 10px;"></div>
+        <button id="sound-toggle" class="action-btn">🔊 開啟過載蜂鳴音效</button>
+        <button id="fullscreen-toggle" class="action-btn">🔲 進入全螢幕</button>
+    </div>
+
+    <div class="info-panel">
+        <strong>狀態監控：</strong> <span id="status-text">系統送電，等待操作。</span><br>
+        <strong>動作解說：</strong> <span id="logic-text" style="color: #0fbcf9;">請按下 ON 啟動馬達，或按 LS 模擬沖床加工計數。</span>
+    </div>
+
+    <!-- ================= 懸浮選單 (三條線) ================= -->
+    <div class="fab-wrapper">
+        <div class="fab-menu" id="fab-menu">
+            <button class="fab-item" onclick="openModal('circuit-modal'); toggleMenu();">🗺️ 控制線路圖</button>
+            <button class="fab-item" onclick="openModal('instr-modal'); toggleMenu();">💡 動作說明</button>
+        </div>
+        <button class="fab-main" onclick="toggleMenu()">☰</button>
+    </div>
+
+    <!-- 動作說明 Modal -->
+    <div class="modal-overlay" id="instr-modal" onclick="closeModal('instr-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal('instr-modal')">&times;</button>
+            <h2>動作說明步驟</h2>
+            <ul>
+                <li><span class="highlight">1. </span>送上電源按ON，MC激磁並自保持、RL亮。</li>
+                <li><span class="highlight">2. </span>按OFF，MC失磁跳脫，MCB作動、YL亮、RL熄，TR1計時到YL熄。</li>
+                <li><span class="highlight">3. </span>按ON，MC激磁並自保持、RL亮。</li>
+                <li><span class="highlight">4. </span>按LS 5次、MC失磁跳脫YL亮、RL熄、TR1計時到YL熄、TR2計時到計數器歸零。</li>
+                <li><span class="highlight">5. </span>拉TH-RY蜂鳴器響。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 線路圖 Modal -->
+    <div class="modal-overlay" id="circuit-modal" onclick="closeModal('circuit-modal')">
+        <div class="modal-content full-screen" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal('circuit-modal')">&times;</button>
+            <!-- 請確保目錄下有此圖檔 b5.png -->
+            <img src="b5.png" alt="控制電路圖 (第二站第五題)">
+        </div>
+    </div>
+
+    <script>
+        // ================= 視窗選單控制 =================
+        function toggleMenu() { document.getElementById('fab-menu').classList.toggle('show'); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // ================= 核心邏輯變數 =================
+        let mc = false;
+        let mcb = false;
+        let x1 = false;
+        let x2 = false;
+        let thry_tripped = false;
+        
+        let count = 0;
+        const targetCount = 5;
+        
+        let tr1_timer = null;
+        let tr2_timer = null;
+        
+        // ================= UI 元件綁定 =================
+        const compMC = document.getElementById('comp-mc');
+        const compMCB = document.getElementById('comp-mcb');
+        const compX1 = document.getElementById('comp-x1');
+        const compX2 = document.getElementById('comp-x2');
+        const compTR1 = document.getElementById('comp-tr1');
+        const compTR2 = document.getElementById('comp-tr2');
+        const compTHRY = document.getElementById('comp-thry');
+        
+        const lightYL = document.getElementById('light-yl');
+        const lightRL = document.getElementById('light-rl');
+        const buzzerUI = document.getElementById('buzzer');
+        const counterDisplay = document.getElementById('counter-val');
+        
+        const statusText = document.getElementById('status-text');
+        const logicText = document.getElementById('logic-text');
+
+        // ================= 音效與全螢幕 =================
+        let soundEnabled = false;
+        let audioCtx = null;
+        let osc = null;
+
+        document.getElementById('sound-toggle').addEventListener('click', (e) => {
+            soundEnabled = !soundEnabled;
+            e.target.innerText = soundEnabled ? "🔊 聲音已開啟" : "🔇 聲音已關閉";
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        });
+
+        document.getElementById('fullscreen-toggle').addEventListener('click', () => {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else if (document.exitFullscreen) document.exitFullscreen();
+        });
+
+        function startBuzzer() {
+            if (soundEnabled && audioCtx && !osc) {
+                osc = audioCtx.createOscillator();
+                osc.type = 'square'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                const gainNode = audioCtx.createGain(); gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start();
+            }
+        }
+        function stopBuzzer() { if (osc) { osc.stop(); osc = null; } }
+
+        function setCompState(comp, isActive, statusTextMsg = 'ON', isWarn = false, isTiming = false) {
+            if (isWarn) comp.className = 'component active-warn';
+            else if (isTiming) comp.className = 'component timing';
+            else if (isActive) comp.className = 'component active';
+            else comp.className = 'component';
+            
+            comp.querySelector('.status').innerText = isWarn ? '跳脫' : (isTiming ? '計時中' : (isActive ? statusTextMsg : 'OFF/待命'));
+        }
+
+        // ================= 邏輯演算 =================
+        function evaluateLogic() {
+            // 1. 安全保護與中斷條件
+            if (thry_tripped) {
+                mc = false;
+            }
+            if (x2) {
+                mc = false; // X2 (NC) 接點切斷 MC 控制迴路
+            }
+
+            // 2. 直流煞車邏輯 (TR1)
+            if (mc) {
+                // 運轉中
+                x1 = true;   // MC (NO) 激磁 X1，X1 自保持
+                mcb = false;
+                if (tr1_timer) { clearTimeout(tr1_timer); tr1_timer = null; }
+            } else {
+                // MC 斷電時，若 X1 仍保持，則啟動煞車
+                if (x1 && !mcb && !tr1_timer) {
+                    mcb = true; // MC (NC) 閉合，送電給 MCB 與 TR1
+                    
+                    tr1_timer = setTimeout(() => {
+                        mcb = false;
+                        x1 = false; // TR1 (NC) 打開，切斷 X1 自保持
+                        tr1_timer = null;
+                        updateUI();
+                    }, 2500); // 模擬 2.5秒煞車時間
+                }
+            }
+
+            // 3. 計數器自動歸零邏輯 (TR2)
+            if (x2 && !tr2_timer) {
+                // 計數滿 5，啟動 TR2 延遲歸零
+                tr2_timer = setTimeout(() => {
+                    count = 0; // 歸零
+                    x2 = false; // 計數器輸出解除
+                    tr2_timer = null;
+                    updateUI();
+                }, 3500); // 模擬 3.5秒延遲歸零 (比煞車稍長以利觀察)
+            }
+
+            updateUI();
+        }
+
+        // ================= 畫面更新 =================
+        function updateUI() {
+            // 燈號與蜂鳴器
+            lightRL.classList.toggle('on', mc);
+            lightYL.classList.toggle('on', mcb);
+            
+            if (thry_tripped) { buzzerUI.classList.add('on'); startBuzzer(); } 
+            else { buzzerUI.classList.remove('on'); stopBuzzer(); }
+
+            // 數字顯示
+            counterDisplay.innerText = count;
+
+            // 器具板狀態
+            setCompState(compMC, mc, '運轉中');
+            setCompState(compMCB, mcb, '煞車中');
+            setCompState(compX1, x1, '自保持');
+            setCompState(compX2, x2, '作動 (滿數)');
+            setCompState(compTR1, false, '', false, tr1_timer !== null);
+            setCompState(compTR2, false, '', false, tr2_timer !== null);
+            
+            compTHRY.className = thry_tripped ? 'component active-warn' : 'component';
+            compTHRY.querySelector('.status').innerText = thry_tripped ? '跳脫' : '正常';
+            compTHRY.style.top = thry_tripped ? '240px' : '235px'; // 模擬按鈕彈出
+
+            // 狀態文字解析
+            let msg = [];
+            let logic = [];
+
+            if (thry_tripped) {
+                msg.push("<span style='color:#e74c3c;'>TH-RY 過載跳脫</span>");
+                logic.push("蜂鳴器響。控制迴路斷電，馬達停止。");
+            } else if (mc) {
+                msg.push("馬達運轉中 (RL亮)");
+                logic.push("MC激磁並自保持，X1同步激磁備用。");
+            } else if (mcb) {
+                msg.push("<span style='color:#f39c12;'>直流煞車進行中 (YL亮)</span>");
+                logic.push("MC失磁，MC (NC) 閉合使 MCB 與 TR1 激磁。TR1 計時中...");
+            } else if (tr2_timer) {
+                msg.push("計數滿載，等待歸零");
+                logic.push("TR2 計時中，即將觸發 RESET 使計數器歸零。");
+            } else {
+                msg.push("系統待機");
+                logic.push("等待按下 ON 鍵啟動。");
+            }
+
+            if (!thry_tripped && x2) {
+                logic.unshift("<strong>[計數達標]</strong> X2 動作切斷 MC。");
+            }
+
+            statusText.innerHTML = msg.join(" | ");
+            logicText.innerHTML = logic.join(" ");
+        }
+
+        // ================= 事件監聽 =================
+        document.getElementById('btn-on').addEventListener('mousedown', () => {
+            if (!thry_tripped && !mcb && !x2) {
+                mc = true;
+                evaluateLogic();
+            }
+        });
+
+        document.getElementById('btn-off').addEventListener('mousedown', () => {
+            if (mc) {
+                mc = false;
+                evaluateLogic();
+            }
+        });
+
+        document.getElementById('btn-ls').addEventListener('mousedown', () => {
+            if (count < targetCount) {
+                count++;
+                if (count === targetCount) {
+                    x2 = true; // 觸發計數器輸出
+                }
+                evaluateLogic();
+            }
+        });
+
+        compTHRY.addEventListener('mousedown', () => {
+            thry_tripped = !thry_tripped;
+            evaluateLogic();
+        });
+
+        // 初始化
+        evaluateLogic();
+    </script>
+</body>
+</html>
